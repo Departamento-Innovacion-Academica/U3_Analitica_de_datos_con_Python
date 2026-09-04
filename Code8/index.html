@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Efecto Typing Python - Validación Cruzada</title>
+  <style>
+    /* Estilos generales */
+    body {
+      background-color: #121214;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      box-sizing: border-box;
+      font-family: 'Fira Code', 'Cascadia Code', Consolas, Monaco, monospace;
+    }
+
+    /* Ventana tipo terminal */
+    .code-window {
+      background-color: #1e1e24;
+      border-radius: 12px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+      width: 100%;
+      max-width: 780px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Barra superior de la ventana */
+    .window-header {
+      background-color: #18181c;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-circle {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .close { background-color: #ff5f56; }
+    .minimize { background-color: #ffbd2e; }
+    .maximize { background-color: #27c93f; }
+
+    .window-title {
+      color: #7a7a8c;
+      font-size: 13px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* Área donde se escribe el código */
+    .code-body {
+      padding: 28px 32px;
+      color: #d4d4d4;
+      font-size: 14px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      text-align: left;
+    }
+
+    /* Paleta de colores (Syntax Highlighting) */
+    .token-keyword { color: #c586c0; font-weight: bold; } /* Palabras clave */
+    .token-module  { color: #4ec9b0; }                     /* Módulos y clases (DecisionTreeClassifier) */
+    .token-func    { color: #dcdcaa; }                     /* Funciones (cross_val_score, mean) */
+    .token-var     { color: #9cdcfe; }                     /* Variables (scores, modelo, X, y) */
+    .token-number  { color: #b5cea8; }                     /* Números (cv=5) */
+
+    /* Cursor parpadeante fino (estilo editor) */
+    .cursor {
+      display: inline-block;
+      width: 2px;
+      height: 16px;
+      background-color: #ffffff;
+      margin-left: 2px;
+      vertical-align: middle;
+      animation: blink 0.8s infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="code-window">
+    <div class="window-header">
+      <span class="btn-circle close"></span>
+      <span class="btn-circle minimize"></span>
+      <span class="btn-circle maximize"></span>
+      <span class="window-title">validar_modelo.py</span>
+    </div>
+    <div class="code-body"><span id="code-content"></span><span class="cursor"></span></div>
+  </div>
+
+  <script>
+    // Configuración de tokens adaptada al script de cross_val_score
+    const tokens = [
+      { text: "from", class: "token-keyword" },
+      { text: " sklearn" },
+      { text: ".model_selection", class: "token-module" },
+      { text: " " },
+      { text: "import", class: "token-keyword" },
+      { text: " cross_val_score\n" },
+      { text: "from", class: "token-keyword" },
+      { text: " sklearn" },
+      { text: ".tree", class: "token-module" },
+      { text: " " },
+      { text: "import", class: "token-keyword" },
+      { text: " ", class: "token-keyword" },
+      { text: "DecisionTreeClassifier", class: "token-module" },
+      { text: "\n\n" },
+      { text: "scores", class: "token-var" },
+      { text: " = " },
+      { text: "cross_val_score", class: "token-func" },
+      { text: "(" },
+      { text: "modelo", class: "token-var" },
+      { text: ", " },
+      { text: "X", class: "token-var" },
+      { text: ", " },
+      { text: "y", class: "token-var" },
+      { text: ", cv=" },
+      { text: "5", class: "token-number" },
+      { text: ")\n" },
+      { text: "print", class: "token-func" },
+      { text: "(" },
+      { text: "scores", class: "token-var" },
+      { text: "." },
+      { text: "mean", class: "token-func" },
+      { text: "())" }
+    ];
+
+    const container = document.getElementById("code-content");
+    let tokenIndex = 0;
+    let charIndex = 0;
+    let currentElement = null;
+
+    function typeCode() {
+      if (tokenIndex < tokens.length) {
+        const currentToken = tokens[tokenIndex];
+
+        if (charIndex === 0) {
+          if (currentToken.class) {
+            currentElement = document.createElement("span");
+            currentElement.className = currentToken.class;
+            container.appendChild(currentElement);
+          } else {
+            currentElement = document.createTextNode("");
+            container.appendChild(currentElement);
+          }
+        }
+
+        const char = currentToken.text.charAt(charIndex);
+        if (currentToken.class) {
+          currentElement.textContent += char;
+        } else {
+          currentElement.nodeValue += char;
+        }
+
+        charIndex++;
+
+        if (charIndex === currentToken.text.length) {
+          charIndex = 0;
+          tokenIndex++;
+        }
+
+        setTimeout(typeCode, 25);
+      }
+    }
+
+    setTimeout(typeCode, 500);
+  </script>
+
+</body>
+</html>
