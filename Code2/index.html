@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Efecto Typing Python - Regresión Lineal Mejorada</title>
+  <style>
+    /* Estilos generales */
+    body {
+      background-color: #121214;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      box-sizing: border-box;
+      font-family: 'Fira Code', 'Cascadia Code', Consolas, Monaco, monospace;
+    }
+
+    /* Ventana tipo terminal */
+    .code-window {
+      background-color: #1e1e24;
+      border-radius: 12px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+      width: 100%;
+      max-width: 720px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Barra superior de la ventana */
+    .window-header {
+      background-color: #18181c;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-circle {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .close { background-color: #ff5f56; }
+    .minimize { background-color: #ffbd2e; }
+    .maximize { background-color: #27c93f; }
+
+    .window-title {
+      color: #7a7a8c;
+      font-size: 13px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* Área donde se escribe el código */
+    .code-body {
+      padding: 28px 32px;
+      color: #d4d4d4;
+      font-size: 14px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      text-align: left;
+    }
+
+    /* Paleta de colores mejor diferenciada (Syntax Highlighting) */
+    .token-keyword { color: #c586c0; font-weight: bold; } /* Palabras clave: from, import */
+    .token-module  { color: #4ec9b0; }                     /* Módulos y clases: sklearn, linear_model, LinearRegression */
+    .token-func    { color: #dcdcaa; }                     /* Funciones y métodos: array, fit, predict */
+    .token-var     { color: #9cdcfe; }                     /* Variables principales: X, y, modelo */
+    .token-number  { color: #b5cea8; }                     /* Números y corchetes de datos */
+
+    /* Cursor parpadeante fino (estilo editor) */
+    .cursor {
+      display: inline-block;
+      width: 2px;
+      height: 16px;
+      background-color: #ffffff;
+      margin-left: 2px;
+      vertical-align: middle;
+      animation: blink 0.8s infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="code-window">
+    <div class="window-header">
+      <span class="btn-circle close"></span>
+      <span class="btn-circle minimize"></span>
+      <span class="btn-circle maximize"></span>
+      <span class="window-title">regresion_lineal.py</span>
+    </div>
+    <div class="code-body"><span id="code-content"></span><span class="cursor"></span></div>
+  </div>
+
+  <script>
+    // Configuración detallada de tokens con la nueva paleta de colores
+    const tokens = [
+      { text: "from", class: "token-keyword" },
+      { text: " sklearn" },
+      { text: ".linear_model", class: "token-module" },
+      { text: " " },
+      { text: "import", class: "token-keyword" },
+      { text: " " },
+      { text: "LinearRegression", class: "token-module" },
+      { text: "\n" },
+      { text: "import", class: "token-keyword" },
+      { text: " numpy " },
+      { text: "as", class: "token-keyword" },
+      { text: " np\n\n" },
+      { text: "X", class: "token-var" },
+      { text: " = np." },
+      { text: "array", class: "token-func" },
+      { text: "(", class: "token-number" },
+      { text: "[[1], [2], [3], [4]]", class: "token-number" },
+      { text: ")\n" },
+      { text: "y", class: "token-var" },
+      { text: " = np." },
+      { text: "array", class: "token-func" },
+      { text: "(", class: "token-number" },
+      { text: "[10, 20, 30, 40]", class: "token-number" },
+      { text: ")\n\n" },
+      { text: "modelo", class: "token-var" },
+      { text: " = " },
+      { text: "LinearRegression", class: "token-module" },
+      { text: "()\n" },
+      { text: "modelo", class: "token-var" },
+      { text: "." },
+      { text: "fit", class: "token-func" },
+      { text: "(X, y)\nprint(modelo." },
+      { text: "predict", class: "token-func" },
+      { text: "(", class: "token-number" },
+      { text: "[[5]]", class: "token-number" },
+      { text: "))", class: "token-number" }
+    ];
+
+    const container = document.getElementById("code-content");
+    let tokenIndex = 0;
+    let charIndex = 0;
+    let currentElement = null;
+
+    function typeCode() {
+      if (tokenIndex < tokens.length) {
+        const currentToken = tokens[tokenIndex];
+
+        if (charIndex === 0) {
+          if (currentToken.class) {
+            currentElement = document.createElement("span");
+            currentElement.className = currentToken.class;
+            container.appendChild(currentElement);
+          } else {
+            currentElement = document.createTextNode("");
+            container.appendChild(currentElement);
+          }
+        }
+
+        const char = currentToken.text.charAt(charIndex);
+        if (currentToken.class) {
+          currentElement.textContent += char;
+        } else {
+          currentElement.nodeValue += char;
+        }
+
+        charIndex++;
+
+        if (charIndex === currentToken.text.length) {
+          charIndex = 0;
+          tokenIndex++;
+        }
+
+        setTimeout(typeCode, 25);
+      }
+    }
+
+    setTimeout(typeCode, 500);
+  </script>
+
+</body>
+</html>
