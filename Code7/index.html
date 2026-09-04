@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Efecto Typing Python - Métricas de Evaluación</title>
+  <style>
+    /* Estilos generales */
+    body {
+      background-color: #121214;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      box-sizing: border-box;
+      font-family: 'Fira Code', 'Cascadia Code', Consolas, Monaco, monospace;
+    }
+
+    /* Ventana tipo terminal */
+    .code-window {
+      background-color: #1e1e24;
+      border-radius: 12px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+      width: 100%;
+      max-width: 780px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Barra superior de la ventana */
+    .window-header {
+      background-color: #18181c;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-circle {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .close { background-color: #ff5f56; }
+    .minimize { background-color: #ffbd2e; }
+    .maximize { background-color: #27c93f; }
+
+    .window-title {
+      color: #7a7a8c;
+      font-size: 13px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* Área donde se escribe el código */
+    .code-body {
+      padding: 28px 32px;
+      color: #d4d4d4;
+      font-size: 14px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      text-align: left;
+    }
+
+    /* Paleta de colores (Syntax Highlighting) */
+    .token-keyword { color: #c586c0; font-weight: bold; } /* Palabras clave */
+    .token-module  { color: #4ec9b0; }                     /* Módulos y funciones métricas */
+    .token-func    { color: #dcdcaa; }                     /* Funciones de impresión y raíz */
+    .token-var     { color: #9cdcfe; }                     /* Variables y listas */
+    .token-number  { color: #b5cea8; }                     /* Números y corchetes */
+    .token-string  { color: #ce9178; }                     /* Cadenas de texto */
+
+    /* Cursor parpadeante fino (estilo editor) */
+    .cursor {
+      display: inline-block;
+      width: 2px;
+      height: 16px;
+      background-color: #ffffff;
+      margin-left: 2px;
+      vertical-align: middle;
+      animation: blink 0.8s infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="code-window">
+    <div class="window-header">
+      <span class="btn-circle close"></span>
+      <span class="btn-circle minimize"></span>
+      <span class="btn-circle maximize"></span>
+      <span class="window-title">metricas_evaluacion.py</span>
+    </div>
+    <div class="code-body"><span id="code-content"></span><span class="cursor"></span></div>
+  </div>
+
+  <script>
+    // Configuración de tokens adaptada al script de métricas de regresión
+    const tokens = [
+      { text: "from", class: "token-keyword" },
+      { text: " sklearn" },
+      { text: ".metrics", class: "token-module" },
+      { text: " " },
+      { text: "import", class: "token-keyword" },
+      { text: " mean_absolute_error, mean_squared_error, r2_score\n" },
+      { text: "import", class: "token-keyword" },
+      { text: " numpy " },
+      { text: "as", class: "token-keyword" },
+      { text: " np\n\n" },
+      { text: "y_real", class: "token-var" },
+      { text: " = " },
+      { text: "[100, 150, 200, 250]", class: "token-number" },
+      { text: "\n" },
+      { text: "y_pred", class: "token-var" },
+      { text: " = " },
+      { text: "[110, 140, 210, 240]", class: "token-number" },
+      { text: "\n\n" },
+      { text: "print", class: "token-func" },
+      { text: "(" },
+      { text: '"MAE:"', class: "token-string" },
+      { text: ", " },
+      { text: "mean_absolute_error", class: "token-module" },
+      { text: "(y_real, y_pred))\n" },
+      { text: "print", class: "token-func" },
+      { text: "(" },
+      { text: '"MSE:"', class: "token-string" },
+      { text: ", " },
+      { text: "mean_squared_error", class: "token-module" },
+      { text: "(y_real, y_pred))\n" },
+      { text: "print", class: "token-func" },
+      { text: "(" },
+      { text: '"RMSE:"', class: "token-string" },
+      { text: ", np." },
+      { text: "sqrt", class: "token-func" },
+      { text: "(" },
+      { text: "mean_squared_error", class: "token-module" },
+      { text: "(y_real, y_pred)))\n" },
+      { text: "print", class: "token-func" },
+      { text: "(" },
+      { text: '"R2:"', class: "token-string" },
+      { text: ", " },
+      { text: "r2_score", class: "token-module" },
+      { text: "(y_real, y_pred))" }
+    ];
+
+    const container = document.getElementById("code-content");
+    let tokenIndex = 0;
+    let charIndex = 0;
+    let currentElement = null;
+
+    function typeCode() {
+      if (tokenIndex < tokens.length) {
+        const currentToken = tokens[tokenIndex];
+
+        if (charIndex === 0) {
+          if (currentToken.class) {
+            currentElement = document.createElement("span");
+            currentElement.className = currentToken.class;
+            container.appendChild(currentElement);
+          } else {
+            currentElement = document.createTextNode("");
+            container.appendChild(currentElement);
+          }
+        }
+
+        const char = currentToken.text.charAt(charIndex);
+        if (currentToken.class) {
+          currentElement.textContent += char;
+        } else {
+          currentElement.nodeValue += char;
+        }
+
+        charIndex++;
+
+        if (charIndex === currentToken.text.length) {
+          charIndex = 0;
+          tokenIndex++;
+        }
+
+        setTimeout(typeCode, 25);
+      }
+    }
+
+    setTimeout(typeCode, 500);
+  </script>
+
+</body>
+</html>
