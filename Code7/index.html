@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Efecto Typing Python - Métricas de Evaluación</title>
+  <title>Efecto Typing Python - Métricas de Clasificación</title>
   <style>
     /* Estilos generales */
     body {
@@ -24,7 +24,7 @@
       border-radius: 12px;
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
       width: 100%;
-      max-width: 780px;
+      max-width: 820px;
       overflow: hidden;
       border: 1px solid rgba(255, 255, 255, 0.1);
       display: flex;
@@ -70,10 +70,8 @@
 
     /* Paleta de colores (Syntax Highlighting) */
     .token-keyword { color: #c586c0; font-weight: bold; } /* Palabras clave */
-    .token-module  { color: #4ec9b0; }                     /* Módulos y funciones métricas */
-    .token-func    { color: #dcdcaa; }                     /* Funciones de impresión y raíz */
-    .token-var     { color: #9cdcfe; }                     /* Variables y listas */
-    .token-number  { color: #b5cea8; }                     /* Números y corchetes */
+    .token-module  { color: #4ec9b0; }                     /* Módulos y funciones de métricas */
+    .token-func    { color: #dcdcaa; }                     /* Funciones de impresión */
     .token-string  { color: #ce9178; }                     /* Cadenas de texto */
 
     /* Cursor parpadeante fino (estilo editor) */
@@ -100,57 +98,43 @@
       <span class="btn-circle close"></span>
       <span class="btn-circle minimize"></span>
       <span class="btn-circle maximize"></span>
-      <span class="window-title">metricas_evaluacion.py</span>
+      <span class="window-title">metricas_clasificacion.py</span>
     </div>
     <div class="code-body"><span id="code-content"></span><span class="cursor"></span></div>
   </div>
 
   <script>
-    // Configuración de tokens adaptada al script de métricas de regresión
+    // Configuración de tokens adaptada al script de métricas de clasificación
     const tokens = [
       { text: "from", class: "token-keyword" },
       { text: " sklearn" },
       { text: ".metrics", class: "token-module" },
       { text: " " },
       { text: "import", class: "token-keyword" },
-      { text: " mean_absolute_error, mean_squared_error, r2_score\n" },
-      { text: "import", class: "token-keyword" },
-      { text: " numpy " },
-      { text: "as", class: "token-keyword" },
-      { text: " np\n\n" },
-      { text: "y_real", class: "token-var" },
-      { text: " = " },
-      { text: "[100, 150, 200, 250]", class: "token-number" },
-      { text: "\n" },
-      { text: "y_pred", class: "token-var" },
-      { text: " = " },
-      { text: "[110, 140, 210, 240]", class: "token-number" },
-      { text: "\n\n" },
+      { text: " accuracy_score, precision_score, recall_score, f1_score\n\n" },
       { text: "print", class: "token-func" },
       { text: "(" },
-      { text: '"MAE:"', class: "token-string" },
+      { text: '"Accuracy:"', class: "token-string" },
       { text: ", " },
-      { text: "mean_absolute_error", class: "token-module" },
+      { text: "accuracy_score", class: "token-module" },
       { text: "(y_real, y_pred))\n" },
       { text: "print", class: "token-func" },
       { text: "(" },
-      { text: '"MSE:"', class: "token-string" },
+      { text: '"Precision:"', class: "token-string" },
       { text: ", " },
-      { text: "mean_squared_error", class: "token-module" },
+      { text: "precision_score", class: "token-module" },
       { text: "(y_real, y_pred))\n" },
       { text: "print", class: "token-func" },
       { text: "(" },
-      { text: '"RMSE:"', class: "token-string" },
-      { text: ", np." },
-      { text: "sqrt", class: "token-func" },
-      { text: "(" },
-      { text: "mean_squared_error", class: "token-module" },
-      { text: "(y_real, y_pred)))\n" },
+      { text: '"Recall:"', class: "token-string" },
+      { text: ", " },
+      { text: "recall_score", class: "token-module" },
+      { text: "(y_real, y_pred))\n" },
       { text: "print", class: "token-func" },
       { text: "(" },
-      { text: '"R2:"', class: "token-string" },
+      { text: '"F1:"', class: "token-string" },
       { text: ", " },
-      { text: "r2_score", class: "token-module" },
+      { text: "f1_score", class: "token-module" },
       { text: "(y_real, y_pred))" }
     ];
 
