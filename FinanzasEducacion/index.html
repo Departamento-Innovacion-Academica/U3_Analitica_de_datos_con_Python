@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aplicaciones del Aprendizaje Automático</title>
+  <style>
+    :root {
+      --bg: #0a0c10;
+      --card-bg: #161a23;
+      --card-border: rgba(255, 255, 255, 0.15);
+      --text-main: #ffffff;
+      --text-muted: #e0e0e0;
+      --accent: #818cf8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem;
+    }
+
+    /* Instrucción Flotante Superior */
+    .floating-instruction {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(8px);
+      padding: 0.65rem 1.4rem;
+      border-radius: 30px;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      animation: float 3s ease-in-out infinite;
+    }
+
+    .floating-instruction svg {
+      width: 18px;
+      height: 18px;
+      fill: var(--accent);
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+
+    .cards-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      max-width: 1100px;
+      width: 100%;
+      justify-content: center;
+      align-items: center;
+      perspective: 1000px;
+    }
+
+    .card {
+      flex: 1 1 300px;
+      max-width: 340px;
+      height: 160px;
+      background-color: var(--card-bg);
+      border-radius: 20px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      cursor: pointer;
+      backdrop-filter: blur(12px);
+      transition: all 0.4s cubic-bezier(0.15, 0.83, 0.66, 1);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      border: 1px solid var(--card-border);
+      position: relative;
+    }
+
+    .card:hover {
+      transform: translateY(-8px) scale(1.03);
+      box-shadow: 0 20px 40px rgba(129, 140, 248, 0.35);
+      border-color: var(--accent);
+    }
+
+    .card h3 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      line-height: 1.3;
+      margin-bottom: 0.5rem;
+    }
+
+    .card .click-hint {
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.7);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 0.5rem;
+    }
+
+    /* Modal 3D */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.82);
+      backdrop-filter: blur(10px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+      z-index: 100;
+      perspective: 1200px;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-card {
+      background: #12151e;
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 3rem;
+      max-width: 650px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.8);
+      transform: rotateX(-20px) rotateY(15px) translateZ(-100px) scale(0.8);
+      opacity: 0;
+      transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease;
+      transform-style: preserve-3d;
+      color: var(--text-main);
+    }
+
+    .modal-overlay.active .modal-card {
+      transform: rotateX(0deg) rotateY(0deg) translateZ(0) scale(1);
+      opacity: 1;
+    }
+
+    .modal-card h2 {
+      font-size: 1.8rem;
+      margin-bottom: 1.5rem;
+      color: #ffffff;
+      transform: translateZ(30px);
+    }
+
+    .modal-card p, .modal-card ul {
+      transform: translateZ(20px);
+    }
+
+    .modal-card p {
+      color: var(--text-muted);
+      font-size: 1rem;
+      line-height: 1.6;
+      margin-bottom: 1.2rem;
+    }
+
+    .modal-card ul {
+      margin-left: 1.5rem;
+      margin-bottom: 1.5rem;
+      color: var(--text-muted);
+    }
+
+    .modal-card ul li {
+      margin-bottom: 0.5rem;
+      line-height: 1.5;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 1.25rem;
+      right: 1.25rem;
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: #fff;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      transition: background 0.3s;
+      transform: translateZ(40px);
+    }
+
+    .close-btn:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    @media (max-width: 650px) {
+      .cards-container {
+        flex-direction: column;
+      }
+      .card {
+        width: 100%;
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="floating-instruction">
+    <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm1 15h-2v-6h2zm0-8h-2V7h2z"/></svg>
+    Haga clic sobre las tarjetas para ampliar la información.
+  </div>
+
+  <div class="cards-container">
+    <div class="card" onclick="openModal(1)">
+      <h3>1.5.1 Aplicaciones en finanzas</h3>
+      <span class="click-hint">Haz clic para ver más</span>
+    </div>
+
+    <div class="card" onclick="openModal(2)">
+      <h3>1.5.2 Aplicaciones en comercio y marketing</h3>
+      <span class="click-hint">Haz clic para ver más</span>
+    </div>
+
+    <div class="card" onclick="openModal(3)">
+      <h3>1.5.3 Aplicaciones en salud</h3>
+      <span class="click-hint">Haz clic para ver más</span>
+    </div>
+
+    <div class="card" onclick="openModal(4)">
+      <h3>1.5.4 Aplicaciones en logística y operaciones</h3>
+      <span class="click-hint">Haz clic para ver más</span>
+    </div>
+
+    <div class="card" onclick="openModal(5)">
+      <h3>1.5.5 Aplicaciones en educación</h3>
+      <span class="click-hint">Haz clic para ver más</span>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modalOverlay" onclick="closeModalOnOverlay(event)">
+    <div class="modal-card">
+      <button class="close-btn" onclick="closeModal()" title="Cerrar (Esc)">✕</button>
+      <div id="modalContent"></div>
+    </div>
+  </div>
+
+  <script>
+    const overlay = document.getElementById('modalOverlay');
+    const modalContent = document.getElementById('modalContent');
+
+    const cardData = {
+      1: `
+        <h2>1.5.1 Aplicaciones en finanzas</h2>
+        <p>El sector financiero es uno de los mayores usuarios de aprendizaje automático.</p>
+        <p><strong>Principales casos de uso:</strong></p>
+        <ul>
+          <li>Detección de fraude en transacciones.</li>
+          <li>Scoring crediticio.</li>
+          <li>Predicción de riesgo.</li>
+          <li>Segmentación de clientes.</li>
+        </ul>
+      `,
+      2: `
+        <h2>1.5.2 Aplicaciones en comercio y marketing</h2>
+        <p>En retail y comercio electrónico, Machine Learning permite personalizar la experiencia del cliente.</p>
+        <p><strong>Usos comunes:</strong></p>
+        <ul>
+          <li>Recomendación de productos.</li>
+          <li>Predicción de abandono de clientes.</li>
+          <li>Segmentación de consumidores.</li>
+          <li>Estimación de demanda.</li>
+        </ul>
+        <p>Empresas digitales utilizan estos modelos para incrementar ventas y fidelización (Bishop, 2023)</p>
+      `,
+      3: `
+        <h2>1.5.3 Aplicaciones en salud</h2>
+        <p>El aprendizaje automático también se utiliza en salud para apoyar decisiones clínicas.</p>
+        <p><strong>Ejemplos:</strong></p>
+        <ul>
+          <li>Diagnóstico asistido por imágenes.</li>
+          <li>Predicción de enfermedades.</li>
+          <li>Análisis de historias clínicas.</li>
+          <li>Optimización de recursos hospitalarios.</li>
+        </ul>
+        <p>Según Topol (2019), la inteligencia artificial está redefiniendo la medicina basada en datos.</p>
+      `,
+      4: `
+        <h2>1.5.4 Aplicaciones en logística y operaciones</h2>
+        <p>En operaciones empresariales se emplea para:</p>
+        <ul>
+          <li>Predicción de inventarios.</li>
+          <li>Optimización de rutas.</li>
+          <li>Mantenimiento predictivo.</li>
+          <li>Estimación de tiempos de entrega.</li>
+        </ul>
+        <p>Esto permite reducir costos y mejorar la eficiencia.</p>
+      `,
+      5: `
+        <h2>1.5.5 Aplicaciones en educación</h2>
+        <p>En el sector educativo, el aprendizaje automático permite analizar el comportamiento estudiantil.</p>
+        <p><strong>Casos frecuentes:</strong></p>
+        <ul>
+          <li>Predicción de deserción.</li>
+          <li>Recomendación de contenidos.</li>
+          <li>Personalización del aprendizaje.</li>
+          <li>Análisis de desempeño académico.</li>
+        </ul>
+        <p>Estas aplicaciones fortalecen estrategias de acompañamiento estudiantil.</p>
+      `
+    };
+
+    function openModal(id) {
+      modalContent.innerHTML = cardData[id];
+      overlay.classList.add('active');
+    }
+
+    function closeModal() {
+      overlay.classList.remove('active');
+    }
+
+    function closeModalOnOverlay(e) {
+      if (e.target === overlay) closeModal();
+    }
+
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape' || event.key === 'Esc') {
+        closeModal();
+      }
+    });
+  </script>
+</body>
+</html>
