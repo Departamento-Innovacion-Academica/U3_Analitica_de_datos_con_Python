@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flujo de Machine Learning</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background-color: #f0f2f5;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px 10px;
+      overflow-x: hidden;
+    }
+
+    .instruction {
+      text-align: center;
+      font-size: 15px;
+      color: #555;
+      margin-bottom: 25px;
+      font-style: italic;
+    }
+
+    /* Contenedor principal */
+    .flow-container {
+      background-color: #f5f4f9;
+      border: 1px solid #e2e8f0;
+      border-radius: 24px;
+      padding: clamp(30px, 4vw, 50px) clamp(15px, 2vw, 30px);
+      width: 100%;
+      max-width: 1150px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    }
+
+    .process-flow {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+      width: 100%;
+    }
+
+    .step-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
+      opacity: 0;
+    }
+
+    /* Tarjeta violeta */
+    .card {
+      background-color: #433980;
+      border-radius: 20px;
+      width: 100%;
+      max-width: 180px;
+      height: 200px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 8px 18px 8px;
+      box-shadow: 0 8px 18px rgba(67, 57, 128, 0.25);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-8px) scale(1.03);
+      box-shadow: 0 14px 28px rgba(67, 57, 128, 0.35);
+    }
+
+    /* Área de Ilustraciones SVG con mayor tamaño */
+    .icon-box {
+      height: 115px;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .icon-box svg {
+      width: 110px;
+      height: 110px;
+    }
+
+    .step-label {
+      font-size: clamp(12px, 1.2vw, 14px);
+      font-weight: 800;
+      color: #ffffff;
+      text-align: center;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      line-height: 1.2;
+    }
+
+    /* Conectores: Triple Triángulo Vertical */
+    .arrow-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 4px;
+      opacity: 0;
+      flex-shrink: 0;
+      padding: 0 2px;
+    }
+
+    .arrow-container svg {
+      width: 10px;
+      height: 10px;
+      fill: #433980;
+    }
+
+    /* Botón de Reinicio */
+    .btn-container {
+      text-align: center;
+      margin-top: 35px;
+    }
+
+    .btn-restart {
+      background: linear-gradient(135deg, #433980, #2b2359);
+      color: #ffffff;
+      border: none;
+      padding: 12px 32px;
+      font-size: 16px;
+      font-weight: 700;
+      border-radius: 30px;
+      cursor: pointer;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+      transition: all 0.25s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-restart:hover {
+      background: linear-gradient(135deg, #594ca8, #433980);
+      transform: scale(1.06) translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+    }
+
+    /* ANIMACIONES */
+    @keyframes popBounce3D {
+      0% {
+        opacity: 0;
+        transform: scale3d(0.2, 0.2, 0.2) rotate(-12deg) translateY(-60px);
+      }
+      55% {
+        opacity: 1;
+        transform: scale3d(1.12, 1.12, 1.12) rotate(4deg) translateY(8px);
+      }
+      75% {
+        transform: scale3d(0.92, 0.92, 0.92) rotate(-2deg);
+      }
+      90% {
+        transform: scale3d(1.03, 1.03, 1.03) rotate(1deg);
+      }
+      100% {
+        opacity: 1;
+        transform: scale3d(1, 1, 1) rotate(0deg) translateY(0);
+      }
+    }
+
+    @keyframes arrowShoot {
+      0% {
+        opacity: 0;
+        transform: translateX(-20px) scale(0);
+      }
+      60% {
+        opacity: 1;
+        transform: translateX(4px) scale(1.3);
+      }
+      100% {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+      }
+    }
+
+    .animate-card {
+      animation: popBounce3D 0.75s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+    }
+
+    .animate-arrow {
+      animation: arrowShoot 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+
+    @media (max-width: 850px) {
+      .process-flow { flex-direction: column; gap: 0; }
+      .step-wrapper { width: 100%; max-width: 200px; }
+      .card { max-width: 200px; height: 180px; }
+      .arrow-container { flex-direction: row; margin: 12px 0; transform: rotate(90deg); }
+      @keyframes arrowShoot {
+        0% { opacity: 0; transform: rotate(90deg) translateY(-20px) scale(0); }
+        60% { opacity: 1; transform: rotate(90deg) translateY(4px) scale(1.3); }
+        100% { opacity: 1; transform: rotate(90deg) translateY(0) scale(1); }
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <p class="instruction">Haga clic sobre el botón "Reiniciar ▶" para repetir la animación.</p>
+
+  <div class="flow-container">
+    <div class="process-flow">
+      
+      <!-- Paso 1: DATOS (Carpeta con Documentos) -->
+      <div class="step-wrapper">
+        <div class="card">
+          <div class="icon-box">
+            <svg viewBox="0 0 100 100">
+              <!-- Archivos -->
+              <rect x="22" y="15" width="22" height="28" rx="3" fill="#e2e8f0" />
+              <rect x="26" y="20" width="14" height="3" fill="#94a3b8" />
+              <rect x="26" y="26" width="10" height="3" fill="#94a3b8" />
+
+              <rect x="39" y="10" width="22" height="28" rx="3" fill="#ffffff" />
+              <rect x="43" y="15" width="14" height="3" fill="#94a3b8" />
+              <rect x="43" y="21" width="10" height="3" fill="#94a3b8" />
+
+              <rect x="56" y="15" width="22" height="28" rx="3" fill="#e2e8f0" />
+              <rect x="60" y="20" width="14" height="3" fill="#94a3b8" />
+              <rect x="60" y="26" width="10" height="3" fill="#94a3b8" />
+
+              <!-- Conectores -->
+              <path d="M 33 43 L 33 55 L 67 55 L 67 43 M 50 38 L 50 55" stroke="#ffffff" stroke-width="3" fill="none" />
+
+              <!-- Carpeta -->
+              <path d="M 15 45 L 35 45 L 42 52 L 85 52 A 4 4 0 0 1 89 56 L 89 80 A 4 4 0 0 1 85 84 L 15 84 A 4 4 0 0 1 11 80 L 11 49 A 4 4 0 0 1 15 45 Z" fill="#f59e0b" />
+              <path d="M 11 55 L 89 55 L 82 84 L 18 84 Z" fill="#fbbf24" />
+            </svg>
+          </div>
+          <span class="step-label">Datos</span>
+        </div>
+      </div>
+
+      <!-- Conector 1 -->
+      <div class="arrow-container">
+        <svg viewBox="0 0 100 100"><polygon points="20,10 90,50 20,90"/></svg>
+        <svg viewBox="0 0 100 100"><polygon points="20,10 90,50 20,90"/></svg>
+        <svg viewBox="0 0 100 100"><polygon points="20,10 90,50 20,90"/></svg>
+      </div>
+
+      <!-- Paso 2: ENTRENAMIENTO (Profesor y Pizarra) -->
+      <div class="step-wrapper">
+        <div class="card">
+          <div class="icon-box">
+            <svg viewBox="0 0 100 100">
+              <!-- Pizarra -->
+              <rect x="45" y="15" width="45" height="32" rx="3" fill="#ffffff" />
+              <!-- Gráfico de pastel en pizarra -->
+              <path d="M62 31 L62 21 A10 10 0 0 1 72 31 Z" fill="#f59e0b" />
+              <path d="M62 31 L72 31 A10 10 0 1 1 62 21 Z" fill="#ec4899" />
+              <rect x="76" y="22" width="10" height="3" fill="#38bdf8" />
+              <rect x="76" y="28" width="6" height="3" fill="#38bdf8" />
+
+              <!-- Profesor -->
+              <circle cx="22" cy="22" r="8" fill="#fbbf24" />
+              <path d="M 14 34 Q 22 34 30 34 L 30 75 L 14 75 Z" fill="#60a5fa" />
+              <!-- Puntero -->
+              <line x1="26" y1="40" x2="52" y2="22" stroke="#fbbf24" stroke-width="3" stroke-linecap="round" />
+
+              <!-- Audiencia / Estudiantes -->
+              <circle cx="32" cy="55" r="6" fill="#f87171" />
+              <path d="M24 68 Q32 63 40 68 L40 75 L24 75 Z" fill="#f87171" />
+
+              <circle cx="52" cy="55" r="6" fill="#fbbf24" />
+              <path d="M44 68 Q52 63 60 68 L60 75 L44 75 Z" fill="#34d399" />
+
+              <circle cx="72" cy="55" r="6" fill="#fbbf24" />
+              <path d="M64 68 Q72 63 80 68 L80 75 L64 75 Z" fill="#a78bfa" />
+            </svg>
+          </div>
+          <span class="step-label">Entrenamiento</span>
+        </div>
+      </div>
+
+      <!-- Conector 2 -->
+      <div class="arrow-container">
+        <svg viewBox="0 0 100 100"><polygon points="20,10 90,50 20,90"/></svg>
+        <svg viewBox="0 0 100 100"><polygon points="20,10 90,50 20,90"/></svg>
+        <svg viewBox="0 0 100 100"><polygon points="20,10 90,50 20,90"/></svg>
+      </div>
+
+      <!-- Paso 3: MODELO (Ciclo con Engranaje y Nodos) -->
+      <div class="step-wrapper">
+        <div class="card">
+          <div class="icon-box">
+            <svg viewBox="0 0 100 100">
+              <!-- Flechas circulares -->
+              <path d="M 50 15 A 35 35 0 0 1 82 60" fill="none" stroke="#818cf8" stroke-width="4" stroke-dasharray="6,4" />
+              <path d="M 82 60 A 35 35 0 0 1 18 60" fill="none" stroke="#818cf8" stroke-width="4" stroke-dasharray="6,4" />
+              <path d="M 18 60 A 35 35 0 0 1 50 15" fill="none" stroke="#818cf8" stroke-width="4" stroke-dasharray="6,4" />
+
+              <!-- Engranaje central -->
+              <circle cx="50" cy="50" r="14" fill="#64748b" />
+              <circle cx="50" cy="50" r="6" fill="#433980" />
+
+              <!-- Nodos -->
+              <!-- Nodo Superior (Usuario) -->
+              <circle cx="50" cy="15" r="12" fill="#93c5fd" />
+              <circle cx="50" cy="12" r="4" fill="#1e3a8a" />
+              <path d="M 42 23 Q 50 18 58 23" fill="#1e3a8a" />
+
+              <!-- Nodo Izquierdo (Check) -->
+              <circle cx="18" cy="60" r="12" fill="#6ee7b7" />
+              <path d="M 12 60 L 16 64 L 24 55" fill="none" stroke="#065f46" stroke-width="3" stroke-linecap="round" />
+
+              <!-- Nodo Derecho (Pregunta) -->
+              <circle cx="82" cy="60" r="12" fill="#93c5fd" />
+              <text x="82" y="66" font-size="16" font-weight="bold" fill="#1e3a8a" text-anchor="middle">?</text>
+            </svg>
+          </div>
+          <span class="step-label">Modelo</span>
+        </div>
+      </div>
+
+      <!-- Conector 3 -->
+      <div class="arrow-container">
+        <svg viewBox="0 0 100 100"><polygon points="20,10 90,50 20,90"/></svg>
+        <svg viewBox="0 0 100 100"><polygon points="20,10 90,50 20,90"/></svg>
+        <svg viewBox="0 0 100 100"><polygon points="20,10 90,50 20,90"/></svg>
+      </div>
+
+      <!-- Paso 4: PREDICCIÓN (Gráfica de Barras con Lupa) -->
+      <div class="step-wrapper">
+        <div class="card">
+          <div class="icon-box">
+            <svg viewBox="0 0 100 100">
+              <!-- Ejes -->
+              <line x1="15" y1="20" x2="15" y2="75" stroke="#94a3b8" stroke-width="3" />
+              <line x1="15" y1="75" x2="85" y2="75" stroke="#94a3b8" stroke-width="3" />
+
+              <!-- Barras -->
+              <rect x="22" y="55" width="10" height="20" fill="#f59e0b" />
+              <rect x="36" y="40" width="10" height="35" fill="#ef4444" />
+              <rect x="50" y="25" width="10" height="50" fill="#3b82f6" />
+              <rect x="64" y="35" width="10" height="40" fill="#10b981" />
+
+              <!-- Línea de tendencia -->
+              <path d="M 22 50 L 38 35 L 52 18 L 68 28" fill="none" stroke="#22c55e" stroke-width="4" stroke-linecap="round" />
+              <polyline points="60,28 68,28 68,20" fill="none" stroke="#22c55e" stroke-width="4" stroke-linecap="round" />
+
+              <!-- Lupa -->
+              <circle cx="68" cy="62" r="14" fill="#a5f3fc" stroke="#38bdf8" stroke-width="4" />
+              <circle cx="68" cy="62" r="6" fill="#0284c7" />
+              <line x1="78" y1="72" x2="90" y2="84" stroke="#f43f5e" stroke-width="6" stroke-linecap="round" />
+            </svg>
+          </div>
+          <span class="step-label">Predicción</span>
+        </div>
+      </div>
+
+      <!-- Conector 4 -->
+      <div class="arrow-container">
+        <svg viewBox="0 0 100 100"><polygon points="20,10 90,50 20,90"/></svg>
+        <svg viewBox="0 0 100 100"><polygon points="20,10 90,50 20,90"/></svg>
+        <svg viewBox="0 0 100 100"><polygon points="20,10 90,50 20,90"/></svg>
+      </div>
+
+      <!-- Paso 5: EVALUACIÓN (Lista de Chequeo con Calificaciones) -->
+      <div class="step-wrapper">
+        <div class="card">
+          <div class="icon-box">
+            <svg viewBox="0 0 100 100">
+              <!-- Lápiz arriba -->
+              <rect x="35" y="10" width="40" height="8" rx="2" fill="#fbbf24" transform="rotate(-10 55 14)" />
+              <polygon points="30,17 37,13 35,21" fill="#f43f5e" />
+
+              <!-- Tabla de Evaluación -->
+              <rect x="18" y="20" width="64" height="68" rx="5" fill="#ffffff" />
+
+              <!-- Filas Check -->
+              <path d="M 25 30 L 29 34 L 35 26" fill="none" stroke="#ef4444" stroke-width="3" stroke-linecap="round" />
+              <line x1="42" y1="30" x2="72" y2="30" stroke="#cbd5e1" stroke-width="3" stroke-linecap="round" />
+
+              <rect x="25" y="40" width="8" height="8" fill="#fde047" />
+              <line x1="42" y1="44" x2="72" y2="44" stroke="#cbd5e1" stroke-width="3" stroke-linecap="round" />
+
+              <!-- Caritas (Happy, Neutral, Sad) -->
+              <circle cx="30" cy="70" r="7" fill="#4ade80" />
+              <path d="M 27 72 Q 30 75 33 72" fill="none" stroke="#15803d" stroke-width="1.5" />
+
+              <circle cx="50" cy="70" r="7" fill="#facc15" />
+              <line x1="47" y1="72" x2="53" y2="72" stroke="#a16207" stroke-width="1.5" />
+
+              <circle cx="70" cy="70" r="7" fill="#f87171" />
+              <path d="M 67 73 Q 70 70 73 73" fill="none" stroke="#b91c1c" stroke-width="1.5" />
+            </svg>
+          </div>
+          <span class="step-label">Evaluación</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="btn-container">
+    <button class="btn-restart" id="btnRestart">
+      Reiniciar ▶
+    </button>
+  </div>
+
+  <script>
+    function triggerAnimations() {
+      const cards = document.querySelectorAll('.step-wrapper');
+      const arrows = document.querySelectorAll('.arrow-container');
+
+      cards.forEach(card => {
+        card.classList.remove('animate-card');
+        card.style.opacity = '0';
+      });
+      arrows.forEach(arrow => {
+        arrow.classList.remove('animate-arrow');
+        arrow.style.opacity = '0';
+      });
+
+      void document.body.offsetHeight;
+
+      let delay = 0;
+      cards.forEach((card, index) => {
+        setTimeout(() => {
+          card.classList.add('animate-card');
+        }, delay);
+
+        if (arrows[index]) {
+          setTimeout(() => {
+            arrows[index].classList.add('animate-arrow');
+          }, delay + 180);
+        }
+
+        delay += 250;
+      });
+    }
+
+    window.addEventListener('DOMContentLoaded', triggerAnimations);
+    document.getElementById('btnRestart').addEventListener('click', triggerAnimations);
+  </script>
+
+</body>
+</html>
